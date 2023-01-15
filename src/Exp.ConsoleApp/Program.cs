@@ -8,10 +8,20 @@ namespace Exp.ConsoleApp {
             
             Console.WriteLine(syntax.GenerateCsharp());
             
+            var lambda = syntax.Compile(new ExpressionLambdaCompiler<MyProgram>());
+            
+            Console.WriteLine(lambda.ToString());
+            
+            MyProgram program = lambda.Compile();
+            
+            Console.WriteLine("Result: {0}", program());
+            
             //new AddExpTree(new UnaryExpTree(new NumberExp(2)), new DivideExpTree(new MultiplyExpTree(new MultiplyExpTree(new NumberExp(1), new NumberExp(3)), new UnaryExpTree(new NumberExp(5))), new NumberExp(2)))
         }
     }
 
+    internal delegate decimal MyProgram();
+    
     internal enum Token {
         Number,
         Plus,
@@ -191,7 +201,11 @@ namespace Exp.ConsoleApp {
     }
 
     internal interface ISyntaxTreeVisitor<T> where T : Delegate {
-        Expression<T> Visit(ExpTree node);
+        Expression<T> Visit(ExpTree syntaxNode);
+        Expression<T> Visit(AddExpTree syntaxNode);
+        Expression<T> Visit(SubExpTree syntaxNode);
+        Expression<T> Visit(MultiplyExpTree syntaxNode);
+        Expression<T> Visit(DivideExpTree syntaxNode);
     }
 
     internal class ExpTree : SyntaxTree {
@@ -255,5 +269,56 @@ namespace Exp.ConsoleApp {
         }
 
         public decimal Number { get; }
+    }
+    
+    internal class ExpressionLambdaCompiler<T> : ISyntaxTreeVisitor<T> where T : Delegate {
+        public Expression<T> Visit(ExpTree syntax) {
+            switch (syntax) {
+                case AddExpTree addExpTree: return Visit(addExpTree);
+                case DivideExpTree divideExpTree: return Visit(divideExpTree);
+                case MultiplyExpTree multiplyExpTree: return Visit(multiplyExpTree);
+                case NumberExp numberExp: return Visit(numberExp);
+                case SubExpTree subExpTree: return Visit(subExpTree);
+                case UnaryExpTree unaryExpTree: return Visit(unaryExpTree);
+            }
+
+            throw new Exception("Error!");
+        }
+
+        public Expression<T> Visit(AddExpTree syntax) {
+            return Expression.Lambda<T>(
+                Expression.Add(
+                    syntax.Lhs.Compile(this).Body,
+                    syntax.Rhs.Compile(this).Body));
+        }
+
+        public Expression<T> Visit(SubExpTree syntax) {
+            return Expression.Lambda<T>(
+                Expression.Subtract(
+                    syntax.Lhs.Compile(this).Body,
+                    syntax.Rhs.Compile(this).Body));
+        }
+
+        public Expression<T> Visit(MultiplyExpTree syntax) {
+            return Expression.Lambda<T>(
+                Expression.Multiply(
+                    syntax.Lhs.Compile(this).Body,
+                    syntax.Rhs.Compile(this).Body));
+        }
+
+        public Expression<T> Visit(DivideExpTree syntax) {
+            return Expression.Lambda<T>(
+                Expression.Divide(
+                    syntax.Lhs.Compile(this).Body,
+                    syntax.Rhs.Compile(this).Body));
+        }
+
+        public Expression<T> Visit(NumberExp syntax) {
+            return Expression.Lambda<T>(Expression.Constant(syntax.Number));
+        }
+
+        public Expression<T> Visit(UnaryExpTree syntax) {
+            return syntax.Rhs.Compile(this);
+        }
     }
 }
