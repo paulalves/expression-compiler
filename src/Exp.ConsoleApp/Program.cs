@@ -3,6 +3,7 @@ using System.Text;
 namespace Exp.ConsoleApp {
     public static class Program {
         public static void Main(string[] _) {
+            var syntax = Parser.Parse("-2-2");
         }
     }
 
@@ -27,6 +28,7 @@ namespace Exp.ConsoleApp {
         }
 
         private void SeekBegin() {
+            Reset();
             Move();
             Walk(); 
         }
@@ -36,7 +38,7 @@ namespace Exp.ConsoleApp {
         }
         
         private void Move() {
-            if (_pos >= _stream.Length) {
+            if (++_pos >= _stream.Length) {
                 _ch = Eof;
                 return;
             }
@@ -83,6 +85,62 @@ namespace Exp.ConsoleApp {
     }
 
     internal class Parser {
+        private readonly Lexer _lexer;
+
+        public Parser(Lexer lexer) {
+            _lexer = lexer;
+        }
+
+        public SyntaxTree Parse() {
+            return AddOrSubSyntaxNode();
+        }
+
+        private SyntaxTree AddOrSubSyntaxNode() {
+            var lhs = UnaryNode();
+            while (true)
+                if (_lexer.Token == Token.Plus) {
+                    _lexer.Walk();
+                    var rhs = UnaryNode();
+                    lhs = new AddExpTree(lhs, rhs);
+                }
+                else if (_lexer.Token == Token.Minus) {
+                    _lexer.Walk();
+                    var rhs = UnaryNode();
+                    lhs = new SubExpTree(lhs, rhs);
+                }
+                else {
+                    return lhs;
+                }
+        }
+
+        private SyntaxTree UnaryNode() {
+            while (true)
+                if (_lexer.Token == Token.Plus) {
+                    _lexer.Walk();
+                }
+                else if (_lexer.Token == Token.Minus) {
+                    _lexer.Walk();
+                    return new UnaryExpTree(UnaryNode());
+                }
+                else {
+                    return LeafNode();
+                }
+        }
+
+        private SyntaxTree LeafNode() {
+            if (_lexer.Token == Token.Number) {
+                var number = new NumberExp(_lexer.Number);
+                _lexer.Walk();
+                return number;
+            }
+
+            throw new Exception($"Error! Invalid token {_lexer.Token}");
+        }
+
+        public static SyntaxTree Parse(string source) {
+            var parser = new Parser(new Lexer(source));
+            return parser.Parse();
+        }
     }
     
     internal class SyntaxTree { }
