@@ -14,10 +14,11 @@ namespace Exp.ConsoleApp {
     using System.Linq.Expressions;
     using System.Text;
     
-    public static class Program {
+    static class Program {
         public static void Main(string[] options) {
             if (options.Length == 0) {
-                Sample();
+                Sample1();
+                Sample2();
                 return;
             }
 
@@ -26,9 +27,9 @@ namespace Exp.ConsoleApp {
             else throw new Exception("Invalid Option!");
         }
 
-        private static void Sample() {
+        private static void Sample1() {
             CompileAndRunFromSource("-2 + 1 * 3 * -5 / 2");
-            
+
             CompileAndRunFromAst(
                 new AddExpTree(
                     new UnaryExpTree(new NumberExp(2)),
@@ -39,18 +40,23 @@ namespace Exp.ConsoleApp {
                                 new NumberExp(3)),
                             new UnaryExpTree(new NumberExp(5))),
                         new NumberExp(2))));
+            Console.WriteLine();
+        }
 
-            // CompileAndRunFromSourceUsingEval("-2 + 1 * 3 * -5 / 2");
-            // CompileAndRunFromAstUsingEval(
-            //     new AddExpTree(
-            //         new UnaryExpTree(new NumberExp(2)),
-            //         new DivideExpTree(
-            //             new MultiplyExpTree(
-            //                 new MultiplyExpTree(
-            //                     new NumberExp(1),
-            //                     new NumberExp(3)),
-            //                 new UnaryExpTree(new NumberExp(5))),
-            //             new NumberExp(2))));
+        private static void Sample2() {
+            CompileAndRunFromSourceUsingEvaluator("-2 + 1 * 3 * -5 / 2");
+            
+            CompileAndRunFromAstUsingEvaluator(
+                new AddExpTree(
+                    new UnaryExpTree(new NumberExp(2)),
+                    new DivideExpTree(
+                        new MultiplyExpTree(
+                            new MultiplyExpTree(
+                                new NumberExp(1),
+                                new NumberExp(3)),
+                            new UnaryExpTree(new NumberExp(5))),
+                        new NumberExp(2))));
+            Console.WriteLine();
         }
 
         private static void Interactive() {
@@ -88,11 +94,11 @@ namespace Exp.ConsoleApp {
             Console.WriteLine();
         }
 
-        private static void CompileAndRunFromSourceUsingEval(string source) {
-            CompileAndRunFromAstUsingEval(Parser.Parse(source));
+        private static void CompileAndRunFromSourceUsingEvaluator(string source) {
+            CompileAndRunFromAstUsingEvaluator(Parser.Parse(source));
         }
         
-        private static void CompileAndRunFromAstUsingEval(SyntaxTree addExpTree) {
+        private static void CompileAndRunFromAstUsingEvaluator(SyntaxTree addExpTree) {
             var result = Compile(addExpTree, new ExpressionEvaluator());
             Console.WriteLine("Result: {0}", result);
         }
