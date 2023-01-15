@@ -3,4 +3,12 @@ namespace Exp.ConsoleApp {
         public static void Main(string[] _) {
         }
     }
+    
+    internal enum Tokens { }
+    
+    internal class Lexer { }
+    
+    internal class Parser { }
+    
+    internal class SyntaxTree { }
 }
