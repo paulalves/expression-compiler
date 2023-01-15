@@ -1,29 +1,40 @@
-using System.Linq.Expressions;
-using System.Text;
+#region [ ReSharper ]
+
+// ReSharper disable ArrangeAccessorOwnerBody
+// ReSharper disable ConvertSwitchStatementToSwitchExpression
+// ReSharper disable PublicConstructorInAbstractClass
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MergeIntoPattern
+// ReSharper disable UnusedMemberInSuper.Global
+
+#endregion [ ReSharper ]
 
 namespace Exp.ConsoleApp {
+    using System.Linq.Expressions;
+    using System.Text;
+    
     public static class Program {
         public static void Main(string[] _) {
             CompileAndRunFromSource("-2 + 1 * 3 * -5 / 2");
-            
+
             CompileAndRunFromAst(
                 new AddExpTree(
-                    new UnaryExpTree(new NumberExp(2)), 
+                    new UnaryExpTree(new NumberExp(2)),
                     new DivideExpTree(
                         new MultiplyExpTree(
                             new MultiplyExpTree(
                                 new NumberExp(1),
-                                new NumberExp(3)), 
-                            new UnaryExpTree(new NumberExp(5))), 
+                                new NumberExp(3)),
+                            new UnaryExpTree(new NumberExp(5))),
                         new NumberExp(2))));
         }
-        
+
         private static void CompileAndRunFromSource(string source) {
             CompileAndRunFromAst(Parser.Parse(source));
         }
 
         private static void CompileAndRunFromAst(SyntaxTree ast) {
-            MyProgram program = Compile(ast);
+            var program = Compile(ast);
 
             Console.WriteLine("Result: {0}", program());
         }
@@ -40,7 +51,7 @@ namespace Exp.ConsoleApp {
     }
 
     internal delegate decimal MyProgram();
-    
+
     internal enum Token {
         Number,
         Plus,
@@ -52,66 +63,61 @@ namespace Exp.ConsoleApp {
 
     internal class Lexer {
         private char _ch;
-        private int _pos; 
-        private Token _token;
-        private decimal _number;
+        private int _pos;
         private readonly char[] _stream;
-        private const char Eof = '\0'; 
+        private const char Eof = '\0';
 
         public Lexer(string stream) {
             _stream = stream.ToCharArray();
-            SeekBegin(); 
+            SeekBegin();
         }
 
         private void SeekBegin() {
             Reset();
             Move();
-            Walk(); 
+            Walk();
         }
 
         public void Reset() {
             _pos = -1;
         }
-        
+
         private void Move() {
             if (++_pos >= _stream.Length) {
                 _ch = Eof;
                 return;
             }
+
             int nextChar = _stream[_pos];
             _ch = nextChar > 0 ? (char)nextChar : Eof;
         }
-        
-        public Token Token {
-            get { return _token; }
-        }
 
-        public decimal Number {
-            get { return _number; }
-        }
-        
+        public Token Token { get; private set; }
+
+        public decimal Number { get; private set; }
+
         public void Walk() {
             while (char.IsWhiteSpace(_ch)) Move();
 
             switch (_ch) {
                 case '+':
                     Move();
-                    _token = Token.Plus;
+                    Token = Token.Plus;
                     return;
                 case '-':
                     Move();
-                    _token = Token.Minus;
+                    Token = Token.Minus;
                     return;
                 case '*':
                     Move();
-                    _token = Token.Times;
+                    Token = Token.Times;
                     return;
                 case '/':
                     Move();
-                    _token = Token.Division;
-                    return;                
+                    Token = Token.Division;
+                    return;
                 case '\0':
-                    _token = Token.Eof;
+                    Token = Token.Eof;
                     break;
             }
 
@@ -122,8 +128,8 @@ namespace Exp.ConsoleApp {
                     Move();
                 }
 
-                _number = decimal.Parse(sb.ToString());
-                _token = Token.Number;
+                Number = decimal.Parse(sb.ToString());
+                Token = Token.Number;
             }
         }
     }
@@ -156,7 +162,7 @@ namespace Exp.ConsoleApp {
                     return lhs;
                 }
         }
-        
+
         private SyntaxTree MultiplyOrDivideNode() {
             var lhs = UnaryNode();
             while (true)
@@ -172,7 +178,7 @@ namespace Exp.ConsoleApp {
                     return lhs;
                 }
         }
-        
+
         private SyntaxTree UnaryNode() {
             while (true)
                 if (_lexer.Token == Token.Plus) {
@@ -253,7 +259,7 @@ namespace Exp.ConsoleApp {
         public SyntaxTree Lhs { get; }
         public SyntaxTree Rhs { get; }
     }
-    
+
     internal class AddExpTree : BinaryExpTree {
         public AddExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
         }
@@ -281,7 +287,7 @@ namespace Exp.ConsoleApp {
 
         public SyntaxTree Rhs { get; }
     }
-    
+
     internal class NumberExp : ExpTree {
         public NumberExp(decimal number) {
             Number = number;
@@ -289,7 +295,7 @@ namespace Exp.ConsoleApp {
 
         public decimal Number { get; }
     }
-    
+
     internal class ExpressionLambdaCompiler<T> : ISyntaxTreeVisitor<T> where T : Delegate {
         public Expression<T> Visit(ExpTree syntax) {
             switch (syntax) {
