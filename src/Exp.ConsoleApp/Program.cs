@@ -1,9 +1,14 @@
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Exp.ConsoleApp {
     public static class Program {
         public static void Main(string[] _) {
             var syntax = Parser.Parse("-2 + 1 * 3 * -5 / 2");
+            
+            Console.WriteLine(syntax.GenerateCsharp());
+            
+            //new AddExpTree(new UnaryExpTree(new NumberExp(2)), new DivideExpTree(new MultiplyExpTree(new MultiplyExpTree(new NumberExp(1), new NumberExp(3)), new UnaryExpTree(new NumberExp(5))), new NumberExp(2)))
         }
     }
 
@@ -168,10 +173,43 @@ namespace Exp.ConsoleApp {
             return parser.Parse();
         }
     }
-    
-    internal class SyntaxTree { }
-    
-    internal class ExpTree : SyntaxTree { }
+
+    internal abstract class SyntaxTree {
+        protected string NodeType {
+            get { return GetType().Name; }
+        }
+
+        public abstract string GenerateCsharp();
+
+        public override string ToString() {
+            return GenerateCsharp();
+        }
+
+        public Expression<T> Compile<T>(ISyntaxTreeVisitor<T> visitor) where T : Delegate {
+            return visitor.Visit((this as ExpTree)!);
+        }
+    }
+
+    internal interface ISyntaxTreeVisitor<T> where T : Delegate {
+        Expression<T> Visit(ExpTree node);
+    }
+
+    internal class ExpTree : SyntaxTree {
+        public override string GenerateCsharp() {
+            switch (this) {
+                case BinaryExpTree binary:
+                    return $"new {NodeType}({binary.Lhs.GenerateCsharp()}, {binary.Rhs.GenerateCsharp()})";
+                case UnaryExpTree unary when unary.Rhs is NumberExp unaryRhs:
+                    return $"new {NodeType}(new {unaryRhs.NodeType}({unaryRhs.Number * -1}))";
+                case UnaryExpTree unary:
+                    return $"new {NodeType}({unary.Rhs.GenerateCsharp()})";
+                case NumberExp number:
+                    return $"new {NodeType}({number.Number})";
+                default:
+                    return "(Unknown)";
+            }
+        }
+    }
 
     internal abstract class BinaryExpTree : ExpTree {
         public BinaryExpTree(SyntaxTree lhs, SyntaxTree rhs) {
