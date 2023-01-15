@@ -10,11 +10,23 @@
 #endregion [ ReSharper ]
 
 namespace Exp.ConsoleApp {
+    using System.Diagnostics;
     using System.Linq.Expressions;
     using System.Text;
     
     public static class Program {
-        public static void Main(string[] _) {
+        public static void Main(string[] options) {
+            if (options.Length == 0) {
+                Sample();
+                return;
+            }
+
+            if (options[0] == "-i" || options[0] == "--interactive")
+                Interactive();
+            else throw new Exception("Invalid Option!");
+        }
+
+        private static void Sample() {
             CompileAndRunFromSource("-2 + 1 * 3 * -5 / 2");
             
             CompileAndRunFromAst(
@@ -39,6 +51,41 @@ namespace Exp.ConsoleApp {
             //                     new NumberExp(3)),
             //                 new UnaryExpTree(new NumberExp(5))),
             //             new NumberExp(2))));
+        }
+
+        private static void Interactive() {
+            var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += delegate {
+                Console.WriteLine("Bye!");
+                cts.Cancel();
+            };
+            
+            Console.WriteLine("Welcome!");
+            while (!cts.IsCancellationRequested) {
+                
+                Console.Write("$ ");
+
+                var source = Console.ReadLine()!;
+                var parser = new Parser(new Lexer(source));
+                
+                var sw = Stopwatch.StartNew();
+                var syntax = parser.Parse();
+                
+                var lambda = syntax.Compile(new ExpressionLambdaCompiler());
+                Summary(lambda.Body.ToString(), syntax, sw.ElapsedMilliseconds, sw.ElapsedTicks);
+                MyProgram program = lambda.Compile();
+
+                Console.WriteLine(">> {0}", program());
+            }
+        }
+
+        private static void Summary(string body, SyntaxTree syntax, long ms, long ticks) {
+            Console.WriteLine();
+            Console.WriteLine("Compiled: {0}", body);
+            Console.WriteLine("C# Syntax Tree: {0}", syntax.GenerateCsharp());
+            Console.WriteLine("Elapsed Compile Time in Ms: {0}", ms);
+            Console.WriteLine("Elapsed Compile Time in Ticks: {0}", ticks);
+            Console.WriteLine();
         }
 
         private static void CompileAndRunFromSourceUsingEval(string source) {
