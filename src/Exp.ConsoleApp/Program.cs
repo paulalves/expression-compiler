@@ -3,7 +3,7 @@ using System.Text;
 namespace Exp.ConsoleApp {
     public static class Program {
         public static void Main(string[] _) {
-            var syntax = Parser.Parse("-2-2");
+            var syntax = Parser.Parse("-2 + 1 * 3 * -5 / 2");
         }
     }
 
@@ -11,6 +11,8 @@ namespace Exp.ConsoleApp {
         Number,
         Plus,
         Minus,
+        Times,
+        Division,
         Eof
     }
 
@@ -18,7 +20,7 @@ namespace Exp.ConsoleApp {
         private char _ch;
         private int _pos; 
         private Token _token;
-        private int _number;
+        private decimal _number;
         private readonly char[] _stream;
         private const char Eof = '\0'; 
 
@@ -50,7 +52,7 @@ namespace Exp.ConsoleApp {
             get { return _token; }
         }
 
-        public int Number {
+        public decimal Number {
             get { return _number; }
         }
         
@@ -66,6 +68,14 @@ namespace Exp.ConsoleApp {
                     Move();
                     _token = Token.Minus;
                     return;
+                case '*':
+                    Move();
+                    _token = Token.Times;
+                    return;
+                case '/':
+                    Move();
+                    _token = Token.Division;
+                    return;                
                 case '\0':
                     _token = Token.Eof;
                     break;
@@ -78,7 +88,7 @@ namespace Exp.ConsoleApp {
                     Move();
                 }
 
-                _number = int.Parse(sb.ToString());
+                _number = decimal.Parse(sb.ToString());
                 _token = Token.Number;
             }
         }
@@ -96,23 +106,39 @@ namespace Exp.ConsoleApp {
         }
 
         private SyntaxTree AddOrSubSyntaxNode() {
-            var lhs = UnaryNode();
+            var lhs = MultiplyOrDivideNode();
             while (true)
                 if (_lexer.Token == Token.Plus) {
                     _lexer.Walk();
-                    var rhs = UnaryNode();
+                    var rhs = MultiplyOrDivideNode();
                     lhs = new AddExpTree(lhs, rhs);
                 }
                 else if (_lexer.Token == Token.Minus) {
                     _lexer.Walk();
-                    var rhs = UnaryNode();
+                    var rhs = MultiplyOrDivideNode();
                     lhs = new SubExpTree(lhs, rhs);
                 }
                 else {
                     return lhs;
                 }
         }
-
+        
+        private SyntaxTree MultiplyOrDivideNode() {
+            var lhs = UnaryNode();
+            while (true)
+                if (_lexer.Token == Token.Times) {
+                    _lexer.Walk();
+                    lhs = new MultiplyExpTree(lhs, UnaryNode());
+                }
+                else if (_lexer.Token == Token.Division) {
+                    _lexer.Walk();
+                    lhs = new DivideExpTree(lhs, UnaryNode());
+                }
+                else {
+                    return lhs;
+                }
+        }
+        
         private SyntaxTree UnaryNode() {
             while (true)
                 if (_lexer.Token == Token.Plus) {
@@ -164,6 +190,16 @@ namespace Exp.ConsoleApp {
 
     internal class SubExpTree : BinaryExpTree {
         public SubExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
+        }
+    }
+
+    internal class MultiplyExpTree : BinaryExpTree {
+        public MultiplyExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
+        }
+    }
+
+    internal class DivideExpTree : BinaryExpTree {
+        public DivideExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
         }
     }
 
