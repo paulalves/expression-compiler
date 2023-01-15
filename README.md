@@ -28,3 +28,4 @@ C# Syntax Tree: new AddExpTree(new UnaryExpTree(new NumberExp(2)), new DivideExp
 Expression Tree: () => (-2 + (((1 * 3) * -5) / 2))
 Result: -9.5
 ```
+![](docs/image.png)
