@@ -81,8 +81,47 @@ namespace Exp.ConsoleApp {
             }
         }
     }
-    
-    internal class Parser { }
+
+    internal class Parser {
+    }
     
     internal class SyntaxTree { }
+    
+    internal class ExpTree : SyntaxTree { }
+
+    internal abstract class BinaryExpTree : ExpTree {
+        public BinaryExpTree(SyntaxTree lhs, SyntaxTree rhs) {
+            Lhs = lhs;
+            Rhs = rhs;
+        }
+
+        public SyntaxTree Lhs { get; }
+        public SyntaxTree Rhs { get; }
+    }
+    
+    internal class AddExpTree : BinaryExpTree {
+        public AddExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
+        }
+    }
+
+    internal class SubExpTree : BinaryExpTree {
+        public SubExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
+        }
+    }
+
+    internal class UnaryExpTree : ExpTree {
+        public UnaryExpTree(SyntaxTree rhs) {
+            Rhs = rhs is NumberExp number ? new NumberExp(number.Number * -1) : rhs;
+        }
+
+        public SyntaxTree Rhs { get; }
+    }
+    
+    internal class NumberExp : ExpTree {
+        public NumberExp(decimal number) {
+            Number = number;
+        }
+
+        public decimal Number { get; }
+    }
 }
