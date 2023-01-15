@@ -4,19 +4,38 @@ using System.Text;
 namespace Exp.ConsoleApp {
     public static class Program {
         public static void Main(string[] _) {
-            var syntax = Parser.Parse("-2 + 1 * 3 * -5 / 2");
+            CompileAndRunFromSource("-2 + 1 * 3 * -5 / 2");
             
-            Console.WriteLine(syntax.GenerateCsharp());
-            
-            var lambda = syntax.Compile(new ExpressionLambdaCompiler<MyProgram>());
-            
-            Console.WriteLine(lambda.ToString());
-            
-            MyProgram program = lambda.Compile();
-            
+            CompileAndRunFromAst(
+                new AddExpTree(
+                    new UnaryExpTree(new NumberExp(2)), 
+                    new DivideExpTree(
+                        new MultiplyExpTree(
+                            new MultiplyExpTree(
+                                new NumberExp(1),
+                                new NumberExp(3)), 
+                            new UnaryExpTree(new NumberExp(5))), 
+                        new NumberExp(2))));
+        }
+        
+        private static void CompileAndRunFromSource(string source) {
+            CompileAndRunFromAst(Parser.Parse(source));
+        }
+
+        private static void CompileAndRunFromAst(SyntaxTree ast) {
+            MyProgram program = Compile(ast);
+
             Console.WriteLine("Result: {0}", program());
-            
-            //new AddExpTree(new UnaryExpTree(new NumberExp(2)), new DivideExpTree(new MultiplyExpTree(new MultiplyExpTree(new NumberExp(1), new NumberExp(3)), new UnaryExpTree(new NumberExp(5))), new NumberExp(2)))
+        }
+
+        private static MyProgram Compile(SyntaxTree ast) {
+            Console.WriteLine("C# Syntax Tree: {0}", ast.GenerateCsharp());
+
+            var callTree = ast.Compile(new ExpressionLambdaCompiler<MyProgram>());
+
+            Console.WriteLine("Expression Tree: {0}", callTree);
+
+            return callTree.Compile();
         }
     }
 
