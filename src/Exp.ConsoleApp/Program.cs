@@ -85,6 +85,8 @@ namespace Exp.ConsoleApp {
                     case "cls":
                         Console.Clear();
                         continue;
+                    case "":
+                        continue;
                 }
 
                 var parser = new Parser(new Lexer(source));
