@@ -77,7 +77,7 @@ namespace Exp.ConsoleApp {
                 var sw = Stopwatch.StartNew();
                 var syntax = parser.Parse();
                 
-                var lambda = syntax.Compile(new ExpressionLambdaCompiler());
+                var lambda = syntax.Accept(new ExpressionLambdaCompiler());
                 Summary(lambda.Body.ToString(), syntax, sw.ElapsedMilliseconds, sw.ElapsedTicks);
                 MyProgram program = lambda.Compile();
 
@@ -120,7 +120,7 @@ namespace Exp.ConsoleApp {
         private static T Compile<T>(SyntaxTree ast, ISyntaxTreeVisitor<T> syntaxTreeVisitor) {
             Console.WriteLine("C# Syntax Tree: {0}", ast.GenerateCsharp());
 
-            return ast.Compile(syntaxTreeVisitor);
+            return ast.Accept(syntaxTreeVisitor);
         }
     }
 
@@ -294,20 +294,19 @@ namespace Exp.ConsoleApp {
             return GenerateCsharp();
         }
 
-        public T Compile<T>(ISyntaxTreeVisitor<T> visitor) {
-            return visitor.Visit((this as ExpTree)!);
-        }
+        public abstract T Accept<T>(ISyntaxTreeVisitor<T> visitor);
     }
 
     internal interface ISyntaxTreeVisitor<T> {
-        T Visit(ExpTree syntaxNode);
         T Visit(AddExpTree syntaxNode);
         T Visit(SubExpTree syntaxNode);
         T Visit(MultiplyExpTree syntaxNode);
         T Visit(DivideExpTree syntaxNode);
+        T Visit(UnaryExpTree syntaxNode);
+        T Visit(NumberExp syntaxNode);
     }
 
-    internal class ExpTree : SyntaxTree {
+    internal abstract class ExpTree : SyntaxTree {
         public override string GenerateCsharp() {
             switch (this) {
                 case BinaryExpTree binary:
@@ -337,20 +336,36 @@ namespace Exp.ConsoleApp {
     internal class AddExpTree : BinaryExpTree {
         public AddExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
         }
+
+        public override T Accept<T>(ISyntaxTreeVisitor<T> visitor) {
+            return visitor.Visit(this);
+        }
     }
 
     internal class SubExpTree : BinaryExpTree {
         public SubExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
+        }
+
+        public override T Accept<T>(ISyntaxTreeVisitor<T> visitor) {
+            return visitor.Visit(this);
         }
     }
 
     internal class MultiplyExpTree : BinaryExpTree {
         public MultiplyExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
         }
+
+        public override T Accept<T>(ISyntaxTreeVisitor<T> visitor) {
+            return visitor.Visit(this);
+        }
     }
 
     internal class DivideExpTree : BinaryExpTree {
         public DivideExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {
+        }
+
+        public override T Accept<T>(ISyntaxTreeVisitor<T> visitor) {
+            return visitor.Visit(this);
         }
     }
 
@@ -360,6 +375,10 @@ namespace Exp.ConsoleApp {
         }
 
         public SyntaxTree Rhs { get; }
+        
+        public override T Accept<T>(ISyntaxTreeVisitor<T> visitor) {
+            return visitor.Visit(this);
+        }
     }
 
     internal class NumberExp : ExpTree {
@@ -368,75 +387,54 @@ namespace Exp.ConsoleApp {
         }
 
         public decimal Number { get; }
+        
+        public override T Accept<T>(ISyntaxTreeVisitor<T> visitor) {
+            return visitor.Visit(this);
+        }
     }
 
     internal class ExpressionLambdaCompiler : ISyntaxTreeVisitor<Expression<MyProgram>> {
-        public Expression<MyProgram> Visit(ExpTree syntax) {
-            switch (syntax) {
-                case AddExpTree addExpTree: return Visit(addExpTree);
-                case DivideExpTree divideExpTree: return Visit(divideExpTree);
-                case MultiplyExpTree multiplyExpTree: return Visit(multiplyExpTree);
-                case NumberExp numberExp: return Visit(numberExp);
-                case SubExpTree subExpTree: return Visit(subExpTree);
-                case UnaryExpTree unaryExpTree: return Visit(unaryExpTree);
-            }
-
-            throw new Exception("Error!");
-        }
 
         public Expression<MyProgram> Visit(AddExpTree syntax) {
             return Expression.Lambda<MyProgram>(
                 Expression.Add(
-                    syntax.Lhs.Compile(this).Body,
-                    syntax.Rhs.Compile(this).Body));
+                    syntax.Lhs.Accept(this).Body,
+                    syntax.Rhs.Accept(this).Body));
         }
 
         public Expression<MyProgram> Visit(SubExpTree syntax) {
             return Expression.Lambda<MyProgram>(
                 Expression.Subtract(
-                    syntax.Lhs.Compile(this).Body,
-                    syntax.Rhs.Compile(this).Body));
+                    syntax.Lhs.Accept(this).Body,
+                    syntax.Rhs.Accept(this).Body));
         }
 
         public Expression<MyProgram> Visit(MultiplyExpTree syntax) {
             return Expression.Lambda<MyProgram>(
                 Expression.Multiply(
-                    syntax.Lhs.Compile(this).Body,
-                    syntax.Rhs.Compile(this).Body));
+                    syntax.Lhs.Accept(this).Body,
+                    syntax.Rhs.Accept(this).Body));
         }
 
         public Expression<MyProgram> Visit(DivideExpTree syntax) {
             return Expression.Lambda<MyProgram>(
                 Expression.Divide(
-                    syntax.Lhs.Compile(this).Body,
-                    syntax.Rhs.Compile(this).Body));
+                    syntax.Lhs.Accept(this).Body,
+                    syntax.Rhs.Accept(this).Body));
         }
 
-        public Expression<MyProgram> Visit(NumberExp syntax) {
-            return Expression.Lambda<MyProgram>(Expression.Constant(syntax.Number));
+        public Expression<MyProgram> Visit(NumberExp syntaxNode) {
+            return Expression.Lambda<MyProgram>(Expression.Constant(syntaxNode.Number));
         }
 
-        public Expression<MyProgram> Visit(UnaryExpTree syntax) {
-            return syntax.Rhs.Compile(this);
+        public Expression<MyProgram> Visit(UnaryExpTree syntaxNode) {
+            return syntaxNode.Rhs.Accept(this);
         }
     }
 
     internal class ExpressionEvaluator : ISyntaxTreeVisitor<decimal> {
-        public decimal Visit(ExpTree syntax) {
-            switch (syntax) {
-                case AddExpTree addExpTree: return Visit(addExpTree);
-                case DivideExpTree divideExpTree: return Visit(divideExpTree);
-                case MultiplyExpTree multiplyExpTree: return Visit(multiplyExpTree);
-                case NumberExp numberExp: return Visit(numberExp);
-                case SubExpTree subExpTree: return Visit(subExpTree);
-                case UnaryExpTree unaryExpTree: return Visit(unaryExpTree);
-            }
-
-            throw new Exception("Error!");
-        }
-
         public decimal Visit(UnaryExpTree syntaxNode) {
-            return syntaxNode.Rhs.Compile(this);
+            return syntaxNode.Rhs.Accept(this);
         }
 
         public decimal Visit(NumberExp syntaxNode) {
@@ -444,23 +442,23 @@ namespace Exp.ConsoleApp {
         }
         
         public decimal Visit(AddExpTree syntaxNode) {
-            return syntaxNode.Lhs.Compile(this) +
-                   syntaxNode.Rhs.Compile(this);
+            return syntaxNode.Lhs.Accept(this) +
+                   syntaxNode.Rhs.Accept(this);
         }
 
         public decimal Visit(SubExpTree syntaxNode) {
-            return syntaxNode.Lhs.Compile(this) -
-                   syntaxNode.Rhs.Compile(this);
+            return syntaxNode.Lhs.Accept(this) -
+                   syntaxNode.Rhs.Accept(this);
         }
 
         public decimal Visit(MultiplyExpTree syntaxNode) {
-            return syntaxNode.Lhs.Compile(this) *
-                   syntaxNode.Rhs.Compile(this);
+            return syntaxNode.Lhs.Accept(this) *
+                   syntaxNode.Rhs.Accept(this);
         }
 
         public decimal Visit(DivideExpTree syntaxNode) {
-            return syntaxNode.Lhs.Compile(this) /
-                   syntaxNode.Rhs.Compile(this);
+            return syntaxNode.Lhs.Accept(this) /
+                   syntaxNode.Rhs.Accept(this);
         }
     }
 }
