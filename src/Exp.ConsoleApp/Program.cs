@@ -88,7 +88,7 @@ namespace Exp.ConsoleApp {
         private static void Summary(string body, SyntaxTree syntax, long ms, long ticks) {
             Console.WriteLine();
             Console.WriteLine("Compiled: {0}", body);
-            Console.WriteLine("C# Syntax Tree: {0}", syntax.GenerateCsharp());
+            Console.WriteLine("C# Syntax Tree: {0}", syntax.Accept(new CsharpCodeGenerator()));
             Console.WriteLine("Elapsed Compile Time in Ms: {0}", ms);
             Console.WriteLine("Elapsed Compile Time in Ticks: {0}", ticks);
             Console.WriteLine();
@@ -118,7 +118,7 @@ namespace Exp.ConsoleApp {
         }
         
         private static T Compile<T>(SyntaxTree ast, ISyntaxTreeVisitor<T> syntaxTreeVisitor) {
-            Console.WriteLine("C# Syntax Tree: {0}", ast.GenerateCsharp());
+            Console.WriteLine("C# Syntax Tree: {0}", ast.Accept(new CsharpCodeGenerator()));
 
             return ast.Accept(syntaxTreeVisitor);
         }
@@ -284,14 +284,8 @@ namespace Exp.ConsoleApp {
     }
 
     internal abstract class SyntaxTree {
-        protected string NodeType {
+        public string NodeType {
             get { return GetType().Name; }
-        }
-
-        public abstract string GenerateCsharp();
-
-        public override string ToString() {
-            return GenerateCsharp();
         }
 
         public abstract T Accept<T>(ISyntaxTreeVisitor<T> visitor);
@@ -307,20 +301,6 @@ namespace Exp.ConsoleApp {
     }
 
     internal abstract class ExpTree : SyntaxTree {
-        public override string GenerateCsharp() {
-            switch (this) {
-                case BinaryExpTree binary:
-                    return $"new {NodeType}({binary.Lhs.GenerateCsharp()}, {binary.Rhs.GenerateCsharp()})";
-                case UnaryExpTree unary when unary.Rhs is NumberExp unaryRhs:
-                    return $"new {NodeType}(new {unaryRhs.NodeType}({unaryRhs.Number * -1}))";
-                case UnaryExpTree unary:
-                    return $"new {NodeType}({unary.Rhs.GenerateCsharp()})";
-                case NumberExp number:
-                    return $"new {NodeType}({number.Number})";
-                default:
-                    return "(Unknown)";
-            }
-        }
     }
 
     internal abstract class BinaryExpTree : ExpTree {
@@ -459,6 +439,42 @@ namespace Exp.ConsoleApp {
         public decimal Visit(DivideExpTree syntaxNode) {
             return syntaxNode.Lhs.Accept(this) /
                    syntaxNode.Rhs.Accept(this);
+        }
+    }
+
+    internal class CsharpCodeGenerator : ISyntaxTreeVisitor<string> {
+        public string Visit(AddExpTree syntaxNode) {
+            return VisitBinaryNode(syntaxNode);
+        }
+
+        public string Visit(SubExpTree syntaxNode) {
+            return VisitBinaryNode(syntaxNode);
+        }
+
+        public string Visit(MultiplyExpTree syntaxNode) {
+            return VisitBinaryNode(syntaxNode);
+        }
+
+        public string Visit(DivideExpTree syntaxNode) {
+            return VisitBinaryNode(syntaxNode);
+        }
+
+        public string Visit(UnaryExpTree syntaxNode) {
+            return string.Format("new {0}({1})", 
+                syntaxNode.NodeType, 
+                syntaxNode.Rhs.Accept(this));
+        }
+
+        public string Visit(NumberExp syntaxNode) {
+            return string.Format("new {0}({1})", 
+                syntaxNode.NodeType,
+                Math.Abs(syntaxNode.Number));
+        }
+        
+        private string VisitBinaryNode(BinaryExpTree syntaxNode) {
+            return string.Format("new {0}({1}, {2})", syntaxNode.NodeType,
+                syntaxNode.Lhs.Accept(this),
+                syntaxNode.Rhs.Accept(this));
         }
     }
 }
