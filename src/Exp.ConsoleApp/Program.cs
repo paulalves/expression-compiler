@@ -6,6 +6,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MergeIntoPattern
 // ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable ArrangeNamespaceBody
 
 #endregion [ ReSharper ]
 
@@ -110,7 +111,7 @@ namespace Exp.ConsoleApp {
         private static void CompileAndRunFromAst(SyntaxTree ast) {
             var lambda = Compile(ast, new ExpressionLambdaCompiler());
 
-            Console.WriteLine("Expression Tree: {0}", lambda.ToString());
+            Console.WriteLine("Expression Tree: {0}", lambda);
             
             MyProgram program = lambda.Compile();
             
