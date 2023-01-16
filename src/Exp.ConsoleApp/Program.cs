@@ -10,6 +10,7 @@
 
 #endregion [ ReSharper ]
 
+[assembly:System.Runtime.CompilerServices.InternalsVisibleTo("Exp.Tests")]
 namespace Exp.ConsoleApp {
     using System.Diagnostics;
     using System.Linq.Expressions;
