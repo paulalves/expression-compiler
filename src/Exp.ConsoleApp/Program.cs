@@ -46,7 +46,7 @@ namespace Exp.ConsoleApp {
 
         private static void Sample2() {
             CompileAndRunFromSourceUsingEvaluator("-2 + 1 * 3 * -5 / 2");
-            
+
             CompileAndRunFromAstUsingEvaluator(
                 new AddExpTree(
                     new UnaryExpTree(new NumberExp(2)),
@@ -69,10 +69,24 @@ namespace Exp.ConsoleApp {
             
             Console.WriteLine("Welcome!");
             while (!cts.IsCancellationRequested) {
-                
                 Console.Write("$ ");
 
                 var source = Console.ReadLine()!;
+                switch (source.Trim().ToLowerInvariant()) {
+                    case ":q":
+                    case "/q":
+                    case "q":
+                    case "quit":
+                    case "exit":
+                        cts.Cancel();
+                        continue;
+                    case "/clear":
+                    case "clear":
+                    case "cls":
+                        Console.Clear();
+                        continue;
+                }
+
                 var parser = new Parser(new Lexer(source));
                 
                 var sw = Stopwatch.StartNew();
@@ -98,7 +112,7 @@ namespace Exp.ConsoleApp {
         private static void CompileAndRunFromSourceUsingEvaluator(string source) {
             CompileAndRunFromAstUsingEvaluator(Parser.Parse(source));
         }
-        
+
         private static void CompileAndRunFromAstUsingEvaluator(SyntaxTree addExpTree) {
             var result = Compile(addExpTree, new ExpressionEvaluator());
             Console.WriteLine("Result: {0}", result);
@@ -112,12 +126,12 @@ namespace Exp.ConsoleApp {
             var lambda = Compile(ast, new ExpressionLambdaCompiler());
 
             Console.WriteLine("Expression Tree: {0}", lambda);
-            
+
             MyProgram program = lambda.Compile();
-            
+
             Console.WriteLine("Result: {0}", program());
         }
-        
+
         private static T Compile<T>(SyntaxTree ast, ISyntaxTreeVisitor<T> syntaxTreeVisitor) {
             Console.WriteLine("C# Syntax Tree: {0}", ast.Accept(new CsharpCodeGenerator()));
 
@@ -133,6 +147,8 @@ namespace Exp.ConsoleApp {
         Minus,
         Times,
         Division,
+        LPar,
+        RPar,
         Eof
     }
 
@@ -190,6 +206,14 @@ namespace Exp.ConsoleApp {
                 case '/':
                     Move();
                     Token = Token.Division;
+                    return;
+                case '(':
+                    Move();
+                    Token = Token.LPar;
+                    return;
+                case ')':
+                    Move();
+                    Token = Token.RPar;
                     return;
                 case '\0':
                     Token = Token.Eof;
@@ -273,6 +297,18 @@ namespace Exp.ConsoleApp {
                 var number = new NumberExp(_lexer.Number);
                 _lexer.Walk();
                 return number;
+            }
+
+            if (_lexer.Token == Token.LPar) {
+                _lexer.Walk();
+
+                var leafNode = AddOrSubSyntaxNode();
+                if (_lexer.Token == Token.RPar) {
+                    _lexer.Walk();
+                    return leafNode;
+                }
+
+                throw new Exception("RPar ')' missing");
             }
 
             throw new Exception($"Error! Invalid token {_lexer.Token}");
