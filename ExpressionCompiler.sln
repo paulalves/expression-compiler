@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler.Repl", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler.Tests", "tests\ExpressionCompiler.Tests\ExpressionCompiler.Tests.csproj", "{31D514B8-9553-4257-A76A-C58F54B6888B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E583D218-4D52-40C3-B14B-97D2E89F8F88}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{8ED322AE-574C-4631-87C3-F69D25738383}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +36,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE854079-D497-4E13-AD2C-CADEE21E1351} = {486F9201-4CD2-40BD-914C-E69E70BDA064}
-		{31D514B8-9553-4257-A76A-C58F54B6888B} = {486F9201-4CD2-40BD-914C-E69E70BDA064}
+		{31D514B8-9553-4257-A76A-C58F54B6888B} = {E583D218-4D52-40C3-B14B-97D2E89F8F88}
 	EndGlobalSection
 EndGlobal
