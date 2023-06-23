@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal abstract class BinaryExpTree : ExpTree {
     public BinaryExpTree(SyntaxTree lhs, SyntaxTree rhs) {

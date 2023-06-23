@@ -10,8 +10,8 @@
 
 #endregion [ ReSharper ]
 
-[assembly:System.Runtime.CompilerServices.InternalsVisibleTo("Exp.Tests")]
-namespace Exp.ConsoleApp {
+[assembly:System.Runtime.CompilerServices.InternalsVisibleTo("ExpressionCompiler.Tests")]
+namespace ExpressionCompiler.Repl {
     using System.Diagnostics;
 
     static class Program {

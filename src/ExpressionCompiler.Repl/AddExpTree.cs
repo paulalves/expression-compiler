@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal class AddExpTree : BinaryExpTree {
     public AddExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {

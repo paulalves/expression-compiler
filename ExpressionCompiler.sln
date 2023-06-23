@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{486F9201-4CD2-40BD-914C-E69E70BDA064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exp.ConsoleApp", "src\Exp.ConsoleApp\Exp.ConsoleApp.csproj", "{CE854079-D497-4E13-AD2C-CADEE21E1351}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler.Repl", "src\ExpressionCompiler.Repl\ExpressionCompiler.Repl.csproj", "{CE854079-D497-4E13-AD2C-CADEE21E1351}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exp.Tests", "tests\Exp.Tests\Exp.Tests.csproj", "{31D514B8-9553-4257-A76A-C58F54B6888B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler.Tests", "tests\ExpressionCompiler.Tests\ExpressionCompiler.Tests.csproj", "{31D514B8-9553-4257-A76A-C58F54B6888B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

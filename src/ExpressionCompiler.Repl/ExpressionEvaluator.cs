@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal class ExpressionEvaluator : ISyntaxTreeVisitor<decimal> {
     public decimal Visit(UnaryExpTree syntaxNode) {

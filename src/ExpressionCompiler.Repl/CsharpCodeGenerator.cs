@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal class CsharpCodeGenerator : ISyntaxTreeVisitor<string> {
     public string Visit(AddExpTree syntaxNode) {

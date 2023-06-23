@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal interface ISyntaxTreeVisitor<T> {
     T Visit(AddExpTree syntaxNode);

@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal class DivideExpTree : BinaryExpTree {
     public DivideExpTree(SyntaxTree lhs, SyntaxTree rhs) : base(lhs, rhs) {

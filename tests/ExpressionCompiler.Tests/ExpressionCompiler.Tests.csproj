@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Exp.ConsoleApp\Exp.ConsoleApp.csproj" />
+      <ProjectReference Include="..\..\src\ExpressionCompiler.Repl\ExpressionCompiler.Repl.csproj" />
     </ItemGroup>
 
 </Project>

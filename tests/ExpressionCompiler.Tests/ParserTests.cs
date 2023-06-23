@@ -1,9 +1,9 @@
-using Exp.ConsoleApp;
+using ExpressionCompiler.Repl;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Exp.Tests {
+namespace ExpressionCompiler.Tests {
     public class ParserTests {
         private readonly ITestOutputHelper _output;
 

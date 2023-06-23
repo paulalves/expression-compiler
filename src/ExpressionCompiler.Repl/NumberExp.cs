@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal class NumberExp : ExpTree {
     public NumberExp(decimal number) {

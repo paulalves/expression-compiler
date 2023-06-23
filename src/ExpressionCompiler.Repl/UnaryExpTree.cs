@@ -1,4 +1,4 @@
-namespace Exp.ConsoleApp
+namespace ExpressionCompiler.Repl
 {
   internal class UnaryExpTree : ExpTree {
     public UnaryExpTree(SyntaxTree rhs) {
