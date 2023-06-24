@@ -2,74 +2,65 @@
 {
   public class ExpressionParser
   {
-  }
+    private readonly ExpressionLexer expressionLexer;
 
-  public abstract class ExpressionNode
-  {
-    protected ExpressionNode(Token token)
+    public ExpressionParser(ExpressionLexer expressionLexer)
     {
-      Token = token;
-    }
-    
-    public Token Token { get; protected set; }
-  }
-
-  public class NumberExpressionNode : ExpressionNode
-  {
-    public NumberExpressionNode(Token token) : base(token)
-    {
+      this.expressionLexer = expressionLexer;
     }
 
-    public decimal Value
+    public ExpressionSyntaxTree Parse()
     {
-      get { return decimal.Parse(Token.Text); }
-    }
-  }
+      var lhs = Term();
+      var opToken = expressionLexer.Peek();
+      while (opToken.Kind == TokenKind.Addition || opToken.Kind == TokenKind.Subtraction)
+      {
+        expressionLexer.Read();
+        var rhs = Term(); 
+        if (opToken.Kind == TokenKind.Addition)
+        {
+          lhs = new AdditionExpressionSyntaxTree(lhs, rhs, opToken);
+        }
+        else
+        {
+          lhs = new SubtractionExpressionSyntaxTree(lhs, rhs, opToken);
+        }
 
-  public abstract class OperatorExpressionNode : ExpressionNode
-  {
-    protected OperatorExpressionNode(Token token) : base(token)
-    {
-    }
-  }
-
-  public class BinaryExpressionNode : OperatorExpressionNode
-  {
-    public BinaryExpressionNode(ExpressionNode lhs, ExpressionNode rhs, Token token) : base(token)
-    {
-      Lhs = lhs;
-      Rhs = rhs;
+        opToken = expressionLexer.Peek();
+      }
+      return lhs;
     }
 
-    public ExpressionNode Lhs { get; protected set; }
-    public ExpressionNode Rhs { get; protected set; }
-  }
+    private ExpressionSyntaxTree Term()
+    {
+      var lhs = Factor();
+      var opToken = expressionLexer.Peek();
+      
+      while (opToken.Kind == TokenKind.Multiplication || opToken.Kind == TokenKind.Division)
+      {
+        expressionLexer.Read();
+       
+        var rhs = Factor();
+        
+        if (opToken.Kind == TokenKind.Multiplication)
+        {
+          lhs = new MultiplicationExpressionSyntaxTree(lhs, rhs, opToken);
+        }
+        else
+        {
+          lhs = new DivisionExpressionSyntaxTree(lhs, rhs, opToken);
+        }
 
-  public class AdditionExpressionNode : BinaryExpressionNode
-  {
-    public AdditionExpressionNode(ExpressionNode lhs, ExpressionNode rhs, Token token) : base(lhs, rhs, token)
-    {
+        opToken = expressionLexer.Peek();
+      }
+      return lhs;
     }
-  }
 
-  public class SubtractionExpressionNode : BinaryExpressionNode
-  {
-    public SubtractionExpressionNode(ExpressionNode lhs, ExpressionNode rhs, Token token) : base(lhs, rhs, token)
+    private ExpressionSyntaxTree Factor()
     {
-    }
-  }
-  
-  public class MultiplicationExpressionNode : BinaryExpressionNode
-  {
-    public MultiplicationExpressionNode(ExpressionNode lhs, ExpressionNode rhs, Token token) : base(lhs, rhs, token)
-    {
-    }
-  }
-    
-  public class DivisionExpressionNode : BinaryExpressionNode
-  {
-    public DivisionExpressionNode(ExpressionNode lhs, ExpressionNode rhs, Token token) : base(lhs, rhs, token)
-    {
+      var token = expressionLexer.Read();
+
+      return token.Kind != TokenKind.Number ? default(ExpressionSyntaxTree) : new NumberExpressionSyntaxTree(token);
     }
   }
 }

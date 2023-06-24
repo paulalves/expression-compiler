@@ -1,6 +1,7 @@
 namespace ExpressionCompiler.Tests
 {
   using FluentAssertions;
+  using Xunit;
 
   public class ScannerTests
   {

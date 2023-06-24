@@ -2,6 +2,7 @@ namespace ExpressionCompiler.Tests
 {
   using System;
   using FluentAssertions;
+  using Xunit;
 
   public class ExpressionLexerTests
   {
