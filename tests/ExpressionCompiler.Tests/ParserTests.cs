@@ -1,9 +1,8 @@
-using ExpressionCompiler.Repl;
-using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
 namespace ExpressionCompiler.Tests {
+    using ExpressionCompiler.Repl;
+    using Xunit;
+    using Xunit.Abstractions;
+
     public class ParserTests {
         private readonly ITestOutputHelper _output;
 
