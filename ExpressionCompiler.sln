@@ -4,16 +4,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{486F9201-4CD2-40BD-914C-E69E70BDA064}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler.Repl", "src\ExpressionCompiler.Repl\ExpressionCompiler.Repl.csproj", "{CE854079-D497-4E13-AD2C-CADEE21E1351}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler.Tests", "tests\ExpressionCompiler.Tests\ExpressionCompiler.Tests.csproj", "{31D514B8-9553-4257-A76A-C58F54B6888B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E583D218-4D52-40C3-B14B-97D2E89F8F88}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{8ED322AE-574C-4631-87C3-F69D25738383}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.github/workflows/ci.yaml = .github/workflows/ci.yaml
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{0582EFDB-E2D1-428C-8459-9D84F98E9514}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yaml = .github\workflows\ci.yaml
 	EndProjectSection
 EndProject
 Global
@@ -37,5 +50,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CE854079-D497-4E13-AD2C-CADEE21E1351} = {486F9201-4CD2-40BD-914C-E69E70BDA064}
 		{31D514B8-9553-4257-A76A-C58F54B6888B} = {E583D218-4D52-40C3-B14B-97D2E89F8F88}
+		{0582EFDB-E2D1-428C-8459-9D84F98E9514} = {8ED322AE-574C-4631-87C3-F69D25738383}
 	EndGlobalSection
 EndGlobal

@@ -12,7 +12,9 @@
 
 [assembly:System.Runtime.CompilerServices.InternalsVisibleTo("ExpressionCompiler.Tests")]
 namespace ExpressionCompiler.Repl {
+    using System;
     using System.Diagnostics;
+    using System.Threading;
 
     static class Program {
         public static void Main(string[] options) {

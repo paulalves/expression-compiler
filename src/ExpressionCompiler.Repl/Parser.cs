@@ -1,5 +1,7 @@
 namespace ExpressionCompiler.Repl
 {
+  using System;
+
   internal class Parser {
     private readonly Lexer _lexer;
 

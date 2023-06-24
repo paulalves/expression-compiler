@@ -1,5 +1,7 @@
 namespace ExpressionCompiler.Repl
 {
+  using System;
+
   internal class CsharpCodeGenerator : ISyntaxTreeVisitor<string> {
     public string Visit(AddExpTree syntaxNode) {
       return VisitBinaryNode(syntaxNode);
