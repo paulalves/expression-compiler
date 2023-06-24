@@ -34,7 +34,7 @@ How to run
 git clone https://github.com/paulalves/expression-compiler && cd expression-compiler
 dotnet restore Exp.sln 
 dotnet build Exp.sln 
-dotnet run --project src/Exp.ConsoleApp/Exp.ConsoleApp.csproj -i 
+dotnet run --project src/ExpressionCompiler.Repl/ExpressionCompiler.Repl.csproj -i 
 ```
 
 ![](docs/image.png)
