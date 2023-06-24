@@ -10,5 +10,10 @@ namespace ExpressionCompiler
     {
       get { return decimal.Parse(Token.Text); }
     }
+
+    public override T Accept<T>(IExpressionSyntaxTreeVisitor<T> visitor)
+    {
+      return visitor.Visit(this);
+    }
   }
 }

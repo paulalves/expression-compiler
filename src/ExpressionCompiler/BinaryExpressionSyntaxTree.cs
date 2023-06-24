@@ -1,6 +1,6 @@
 namespace ExpressionCompiler
 {
-  public class BinaryExpressionSyntaxTree : OperatorExpressionSyntaxTree
+  public abstract class BinaryExpressionSyntaxTree : OperatorExpressionSyntaxTree
   {
     public BinaryExpressionSyntaxTree(ExpressionSyntaxTree lhs, ExpressionSyntaxTree rhs, Token token) : base(token)
     {
