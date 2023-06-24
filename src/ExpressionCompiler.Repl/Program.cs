@@ -10,7 +10,7 @@
 
 #endregion [ ReSharper ]
 
-[assembly:System.Runtime.CompilerServices.InternalsVisibleTo("ExpressionCompiler.Tests")]
+[assembly:System.Runtime.CompilerServices.InternalsVisibleTo("ExpressionCompiler.Repl.Tests")]
 namespace ExpressionCompiler.Repl {
     using System;
     using System.Diagnostics;

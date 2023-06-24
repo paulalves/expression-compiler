@@ -1,4 +1,4 @@
-namespace ExpressionCompiler.Tests {
+namespace ExpressionCompiler.Repl.Tests {
     using ExpressionCompiler.Repl;
     using Xunit;
     using Xunit.Abstractions;
@@ -58,10 +58,10 @@ namespace ExpressionCompiler.Tests {
         }
         
         private decimal Calc(string source) {
-            var syntaxTree = Parser.Parse(source);
-            _output.WriteLine(syntaxTree.Accept(new CsharpCodeGenerator()));
+            var syntaxTree = Repl.Parser.Parse(source);
+            _output.WriteLine(syntaxTree.Accept(new Repl.CsharpCodeGenerator()));
             
-            var lambda = syntaxTree.Accept(new ExpressionLambdaCompiler());
+            var lambda = syntaxTree.Accept(new Repl.ExpressionLambdaCompiler());
             _output.WriteLine(string.Empty);
             _output.WriteLine(lambda.ToString());
             
