@@ -7,6 +7,8 @@ namespace ExpressionCompiler
     Subtraction,
     Multiplication,
     Division,
+    OpenPar,
+    ClosePar,
     EOF
   }
 }

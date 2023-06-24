@@ -17,7 +17,9 @@ namespace ExpressionCompiler
         { '+', TokenKind.Addition },
         { '-', TokenKind.Subtraction },
         { '*', TokenKind.Multiplication },
-        { '/', TokenKind.Division }
+        { '/', TokenKind.Division },
+        { '(', TokenKind.OpenPar },
+        { ')', TokenKind.ClosePar }
       };
     }
 
@@ -33,7 +35,7 @@ namespace ExpressionCompiler
           scanner.Read();
           token = new Token(ch.Value.ToString(), scanner.Position, operators[ch.Value]);
         }
-        else if (char.IsDigit(ch.Value))
+        else if (char.IsDigit(ch.Value) || ch.Value == '.')
         {
           token = Parse();
         }

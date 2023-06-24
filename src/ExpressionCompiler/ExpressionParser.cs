@@ -1,5 +1,7 @@
 ﻿namespace ExpressionCompiler
 {
+  using System;
+
   public class ExpressionParser
   {
     private readonly ExpressionLexer expressionLexer;
@@ -58,9 +60,33 @@
 
     private ExpressionSyntaxTree Factor()
     {
-      var token = expressionLexer.Read();
-
+      
+      var token = expressionLexer.Peek();
+      if (token.Kind == TokenKind.OpenPar)
+      {
+        return SubExp();
+      }
+      
+      token = expressionLexer.Read();
       return token.Kind != TokenKind.Number ? default(ExpressionSyntaxTree) : new NumberExpressionSyntaxTree(token);
+    }
+
+    private ExpressionSyntaxTree SubExp()
+    {
+      var token = expressionLexer.Read();
+      if (token.Kind != TokenKind.OpenPar)
+      {
+        throw new Exception($"Expected '(' at position '{token.Position}'");
+      }
+      
+      var exp = Parse();
+      
+      token = expressionLexer.Read();
+      if (token.Kind != TokenKind.ClosePar)
+      {
+        throw new Exception($"Expected ')' at position '{token.Position}'");
+      }
+      return exp;
     }
   }
 }
