@@ -20,7 +20,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{8ED322AE-574C-4631-87C3-F69D25738383}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
-		.github/workflows/ci.yaml = .github/workflows/ci.yaml
 		global.json = global.json
 	EndProjectSection
 EndProject
@@ -28,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yaml = .github\workflows\ci.yaml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCompiler", "src\ExpressionCompiler\ExpressionCompiler.csproj", "{9B1BC7B1-32A3-4E0A-8861-77631B4D39B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +47,15 @@ Global
 		{31D514B8-9553-4257-A76A-C58F54B6888B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31D514B8-9553-4257-A76A-C58F54B6888B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31D514B8-9553-4257-A76A-C58F54B6888B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B1BC7B1-32A3-4E0A-8861-77631B4D39B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B1BC7B1-32A3-4E0A-8861-77631B4D39B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B1BC7B1-32A3-4E0A-8861-77631B4D39B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B1BC7B1-32A3-4E0A-8861-77631B4D39B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE854079-D497-4E13-AD2C-CADEE21E1351} = {486F9201-4CD2-40BD-914C-E69E70BDA064}
 		{31D514B8-9553-4257-A76A-C58F54B6888B} = {E583D218-4D52-40C3-B14B-97D2E89F8F88}
 		{0582EFDB-E2D1-428C-8459-9D84F98E9514} = {8ED322AE-574C-4631-87C3-F69D25738383}
+		{9B1BC7B1-32A3-4E0A-8861-77631B4D39B2} = {486F9201-4CD2-40BD-914C-E69E70BDA064}
 	EndGlobalSection
 EndGlobal
