@@ -1,5 +1,9 @@
 namespace ExpressionCompiler
 {
+  using System.Diagnostics;
+  using System.Text;
+
+  [DebuggerDisplay("{DebuggerDisplay()}")]
   public class NumberExpressionSyntaxTree : ExpressionSyntaxTree
   {
     public NumberExpressionSyntaxTree(Token token) : base(token)
@@ -14,6 +18,13 @@ namespace ExpressionCompiler
     public override T Accept<T>(IExpressionSyntaxTreeVisitor<T> visitor)
     {
       return visitor.Visit(this);
+    }
+
+    internal override string DebuggerDisplay()
+    {
+      var sb = new StringBuilder();
+      sb.Append(Token.Text);
+      return sb.ToString();
     }
   }
 }

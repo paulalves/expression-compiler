@@ -1,5 +1,8 @@
 namespace ExpressionCompiler
 {
+  using System.Diagnostics;
+  using System.Text;
+
   public class Token
   {
     public Token(string text, int position, TokenKind kind)
@@ -14,5 +17,12 @@ namespace ExpressionCompiler
     public TokenKind Kind { get; private set; }
 
     public static Token EOF { get; } = new Token(null, -1, TokenKind.EOF);
+
+    public override string ToString()
+    {
+      var sb = new StringBuilder();
+      sb.Append(Text);
+      return sb.ToString();
+    }
   }
 }
