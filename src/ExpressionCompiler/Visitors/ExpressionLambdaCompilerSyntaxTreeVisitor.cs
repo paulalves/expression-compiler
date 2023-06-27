@@ -4,7 +4,8 @@ namespace ExpressionCompiler.Visitors
   using System.Linq.Expressions;
   using ExpressionCompiler.SyntaxTree;
 
-  public class ExpressionLambdaCompiler : IExpressionSyntaxTreeVisitor<LambdaExpression>
+
+  public class ExpressionLambdaCompilerSyntaxTreeVisitor : IExpressionSyntaxTreeVisitor<LambdaExpression>
   {
     public LambdaExpression Visit(AdditionExpressionSyntaxTree syntaxTree)
     {

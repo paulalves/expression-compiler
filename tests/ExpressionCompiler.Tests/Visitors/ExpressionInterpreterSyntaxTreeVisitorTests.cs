@@ -6,7 +6,7 @@ namespace ExpressionCompiler.Tests.Visitors
   using FluentAssertions;
   using Xunit;
 
-  public static class ExpressionInterpreterTests
+  public static class ExpressionInterpreterSyntaxTreeVisitorTests
   {
     [Theory]
     [InlineData("3/2*1-1*100", -98.5)]
@@ -24,7 +24,7 @@ namespace ExpressionCompiler.Tests.Visitors
     {
       var parser = new ExpressionParser(new ExpressionLexer(new Scanner(exp)));
       var syntaxTree = parser.Parse();
-      var interpreter = new ExpressionInterpreter();
+      var interpreter = new ExpressionInterpreterSyntaxTreeVisitor();
       var result = syntaxTree.Accept(interpreter);
       result.Should().Be(expected);
     }
@@ -36,7 +36,7 @@ namespace ExpressionCompiler.Tests.Visitors
     public static void Tests(string source, decimal expected) {
       var parser = new ExpressionParser(new ExpressionLexer(new Scanner(source)));
       var syntaxTree = parser.Parse();
-      var interpreter = new ExpressionInterpreter();
+      var interpreter = new ExpressionInterpreterSyntaxTreeVisitor();
       var result = syntaxTree.Accept(interpreter);
       result.Should().Be(expected);
     }

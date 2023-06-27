@@ -2,7 +2,7 @@ namespace ExpressionCompiler.Visitors
 {
   using ExpressionCompiler.SyntaxTree;
 
-  public class ExpressionInterpreter : IExpressionSyntaxTreeVisitor<decimal>
+  public class ExpressionInterpreterSyntaxTreeVisitor : IExpressionSyntaxTreeVisitor<decimal>
   {
     public decimal Visit(AdditionExpressionSyntaxTree syntaxTree)
     {

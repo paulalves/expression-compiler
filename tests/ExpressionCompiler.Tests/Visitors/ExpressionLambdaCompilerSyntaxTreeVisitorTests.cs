@@ -8,7 +8,7 @@ namespace ExpressionCompiler.Tests.Visitors
   using FluentAssertions;
   using Xunit;
 
-  public class ExpressionLambdaCompilerTests
+  public class ExpressionLambdaCompilerSyntaxTreeVisitorTests
   {
     [Theory]
     [InlineData("3/2*1-1*100", -98.5)]
@@ -26,7 +26,7 @@ namespace ExpressionCompiler.Tests.Visitors
     {
       var parser = new ExpressionParser(new ExpressionLexer(new Scanner(exp)));
       var syntaxTree = parser.Parse();
-      var interpreter = new ExpressionLambdaCompiler();
+      var interpreter = new ExpressionLambdaCompilerSyntaxTreeVisitor();
 
       var lambda = (Expression<Func<decimal>>)syntaxTree.Accept(interpreter);
       
